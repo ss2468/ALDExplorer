@@ -261,3 +261,17 @@ __pycache__/
 .localhistory/
 *.cmd
 *.lnk
+
+# 文件夹
+/.idea/
+/.vs/
+/**/bin/
+/**/obj/
+
+# 项目
+/demo/
+
+# 文件
+**.exe
+**.dll
+**.user

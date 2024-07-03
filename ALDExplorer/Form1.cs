@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using FreeImageAPI;
 using System.Diagnostics;
+using ALDExplorer.ALDExplorer2;
 //using WMPLib;
 //using DDW.Swf;
 using ALDExplorer.Formats;
@@ -17,6 +18,9 @@ namespace ALDExplorer
 {
     public partial class Form1 : Form
     {
+        ArchiveFileCollection loadedArchiveFiles = null;
+        FileOperations fileOperations = new FileOperations();
+        
         AldFileCollection loadedAldFile = null;
         //AldFileCollection loadedAldFiles = null;
         public const string emptySearchPrompt = "Please Enter Filter...";
@@ -113,6 +117,14 @@ namespace ALDExplorer
         private void OpenFile(string fileName, BackgroundWorker worker)
         {
             loadedAldFile = new AldFileCollection();
+            
+            /* fixme 读取ALD文件 */
+            // this.loadedArchiveFiles = fileOperations.loadedArchiveFiles;
+            Console.WriteLine(fileName);
+            ArchiveFileCollection archiveFiles = new ArchiveFileCollection();
+            archiveFiles.ReadFile(fileName);
+            this.loadedArchiveFiles = archiveFiles;
+
             if (worker != null)
                 loadedAldFile.ProgressChanged += (_, arg) => worker.ReportProgress(arg.Percentage, arg);
             try
@@ -2074,6 +2086,9 @@ namespace ALDExplorer
             string ainFileName = Path.Combine(Path.GetDirectoryName(this.loadedAldFile.AldFileName), "System39.ain");
             if (!File.Exists(ainFileName))
             {
+                /* fixme sco转txt方法 */
+                // Test.test();
+                ExportTextClassic();
                 return;
             }
 
@@ -2093,6 +2108,69 @@ namespace ALDExplorer
             }
         }
 
+        private void ExportTextClassic()
+        {
+            /* fixme 迭代sco脚本 */
+            foreach (var fileEntry in loadedArchiveFiles.FileEntries)
+            {
+                string extension = Path.GetExtension(fileEntry.FileName).ToLowerInvariant();
+                if (extension == ".sco")
+                {
+                    ExportTextClassic(fileEntry);
+                }
+            }
+        }
+        
+        private void ExportTextClassic(ArchiveFileEntry fileEntry)
+        {
+            string textDirectory = Path.Combine(Path.GetDirectoryName(this.loadedArchiveFiles.ArchiveFileName), "text");
+            string textBaseFileName = Path.ChangeExtension(fileEntry.FileName, ".txt");
+            string fileName = Path.Combine(textDirectory, textBaseFileName);
+
+            string[] strings = GetFileStringsClassic(fileEntry);
+            if (strings.Length > 0)
+            {
+                if (!Directory.Exists(textDirectory))
+                {
+                    Directory.CreateDirectory(textDirectory);
+                }
+                File.WriteAllLines(fileName, strings, shiftJis);
+            }
+        }
+        
+        private string[] GetFileStringsClassic(ArchiveFileEntry fileEntry)
+        {
+            var bytes = fileEntry.GetFileData();
+            var ms = new MemoryStream(bytes);
+            var br = new BinaryReader(ms);
+            List<string> list = new List<string>();
+
+            const int minimumLength = 2;
+            List<string> strings = new List<string>();
+
+
+            for (int startPosition = 0; startPosition < bytes.Length; startPosition++)
+            {
+                int validBytes = ShiftJisUtil.NumberOfValidBytesAtPositionNoAscii(bytes, startPosition);
+                if (validBytes >= minimumLength)
+                {
+                    byte[] bytes2 = new byte[validBytes];
+                    Array.Copy(bytes, startPosition, bytes2, 0, validBytes);
+                    string text = ShiftJisUtil.HalfWidthKatakanaToHiragana(shiftJis.GetString(bytes2, 0, bytes2.Length));
+                    if (text.Length == 1 && text[0] < 0x2000)
+                    {
+                        //reject single greek/cyrillic character
+                    }
+                    else
+                    {
+                        strings.Add(text);
+                    }
+                    startPosition += validBytes;
+                }
+            }
+            return strings.ToArray();
+        }
+        
         static Encoding shiftJis = Encoding.GetEncoding("shift-jis");
 
         private void ExportText(AldFileEntry fileEntry, string[] ainStrings)

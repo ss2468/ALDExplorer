@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ALDExplorer", "ALDExplorer\ALDExplorer.csproj", "{87AA2383-2CA1-427F-A501-50EED3828B30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Untitled", "Untitled\Untitled.csproj", "{D47AD776-2E19-4EAD-9A4F-92F6D767CF24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -15,6 +17,10 @@ Global
 		{87AA2383-2CA1-427F-A501-50EED3828B30}.Debug|x86.Build.0 = Debug|Any CPU
 		{87AA2383-2CA1-427F-A501-50EED3828B30}.Release|x86.ActiveCfg = Release|x86
 		{87AA2383-2CA1-427F-A501-50EED3828B30}.Release|x86.Build.0 = Release|x86
+		{D47AD776-2E19-4EAD-9A4F-92F6D767CF24}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D47AD776-2E19-4EAD-9A4F-92F6D767CF24}.Debug|x86.Build.0 = Debug|Any CPU
+		{D47AD776-2E19-4EAD-9A4F-92F6D767CF24}.Release|x86.ActiveCfg = Release|Any CPU
+		{D47AD776-2E19-4EAD-9A4F-92F6D767CF24}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
